@@ -13,7 +13,12 @@ import com.vaadin.flow.theme.lumo.LumoUtility.Margin;
 @Route(value = "empty", layout = MainLayout.class)
 public class EmptyView extends VerticalLayout {
 
-    public EmptyView() {
+    /**
+	 * 
+	 */
+	private static final long serialVersionUID = 8934828330228783735L;
+
+	public EmptyView() {
         setSpacing(false);
 
         Image img = new Image("images/empty-plant.png", "placeholder plant");
@@ -24,7 +29,8 @@ public class EmptyView extends VerticalLayout {
         header.addClassNames(Margin.Top.XLARGE, Margin.Bottom.MEDIUM);
         add(header);
         add(new Paragraph("It’s a place where you can grow your own UI 🤗"));
-
+        add(new Paragraph("Created"));
+        
         setSizeFull();
         setJustifyContentMode(JustifyContentMode.CENTER);
         setDefaultHorizontalComponentAlignment(Alignment.CENTER);
