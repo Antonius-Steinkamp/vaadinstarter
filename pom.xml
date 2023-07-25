@@ -12,6 +12,9 @@
 		<java.version>17</java.version>
 		<vaadin.version>24.1.3</vaadin.version>
 		<selenium.version>4.10.0</selenium.version>
+		<jib.version>3.3.2</jib.version>
+		<base.image>eclipse-temurin:17-jre@sha256:bfb9eb9a4a3f29575c900085fce271932692e9bc653e06fc6cfa3a7df1f849d3</base.image>
+		<docker-hub.repo>registry.hub.docker.com/antonius</docker-hub.repo>
 	</properties>
 
 	<parent>
@@ -115,19 +118,19 @@
 			<plugin>
 				<groupId>com.google.cloud.tools</groupId>
 				<artifactId>jib-maven-plugin</artifactId>
-				<version>3.3.2</version>
+				<version>${jib.version}</version>
 				<configuration>
 					<from>
-						<image>eclipse-temurin:17-jre</image>
+						<image>${base.image}</image>
 					</from>
 					<to>
-						<image>registry.hub.docker.com/antonius/${project.name}</image>
+						<image>${docker-hub.repo}/${project.name}</image>
 					</to>
 					<container>
 						<ports>
 							<port>8080</port>
 						</ports>
-						<mainClass>com.example.application.Application</mainClass>
+						<mainClass>${project.groupId}.Application</mainClass>
 						<creationTime>${maven.build.timestamp}</creationTime>
 					</container>
 				</configuration>
