@@ -22,7 +22,12 @@ import com.vaadin.flow.theme.lumo.LumoUtility.Padding;
 @Uses(Icon.class)
 public class PersonFormView extends Composite<VerticalLayout> {
 
-    private HorizontalLayout layoutRow = new HorizontalLayout();
+    /**
+	 * 
+	 */
+	private static final long serialVersionUID = -6410472950643330620L;
+
+	private HorizontalLayout layoutRow = new HorizontalLayout();
 
     private VerticalLayout layoutColumn5 = new VerticalLayout();
 
@@ -66,31 +71,31 @@ public class PersonFormView extends Composite<VerticalLayout> {
         layoutColumn5.setWidth(null);
         layoutRow.setFlexGrow(1.0, layoutColumn2);
         layoutColumn2.setWidth(null);
-        h3.setText("Personal Information");
+        h3.setText(getTranslation("Personal Information"));
         layoutRow2.setWidthFull();
         layoutRow2.addClassName(Gap.LARGE);
         layoutRow2.setFlexGrow(1.0, layoutColumn3);
         layoutColumn3.setWidth(null);
-        textField.setLabel("First Name");
+        textField.setLabel(getTranslation("First Name"));
         textField.setWidthFull();
-        datePicker.setLabel("Birthday");
+        datePicker.setLabel(getTranslation("Birthday"));
         datePicker.setWidthFull();
-        emailField.setLabel("Email");
+        emailField.setLabel(getTranslation("Email"));
         emailField.setWidthFull();
         layoutRow2.setFlexGrow(1.0, layoutColumn4);
         layoutColumn4.setWidth(null);
-        textField2.setLabel("Last Name");
+        textField2.setLabel(getTranslation("Last Name"));
         textField2.setWidthFull();
         layoutRow3.addClassName(Gap.MEDIUM);
         layoutRow3.setWidthFull();
-        textField3.setLabel("Phone Number");
+        textField3.setLabel(getTranslation("Phone Number"));
         layoutRow3.setFlexGrow(1.0, textField3);
-        textField4.setLabel("Occupation");
+        textField4.setLabel(getTranslation("Occupation"));
         textField4.setWidthFull();
         layoutRow4.addClassName(Gap.MEDIUM);
-        buttonPrimary.setText("Save");
+        buttonPrimary.setText(getTranslation("Save"));
         buttonPrimary.addThemeVariants(ButtonVariant.LUMO_PRIMARY);
-        buttonSecondary.setText("Cancel");
+        buttonSecondary.setText(getTranslation("Cancel"));
         layoutRow.setFlexGrow(1.0, layoutColumn6);
         layoutColumn6.setWidth(null);
         getContent().add(layoutRow);

@@ -10,7 +10,7 @@ import com.example.application.views.empty.EmptyView;
 import com.example.application.views.gridwithfilters.GridwithFiltersView;
 import com.example.application.views.helloworld.HelloWorldView;
 import com.example.application.views.imagelist.ImageListView;
-import com.example.application.views.masterdetail.MasterDetailView;
+import com.example.application.views.masterdetail.PersonMasterDetailView;
 import com.example.application.views.personform.PersonFormView;
 import com.vaadin.flow.component.applayout.AppLayout;
 import com.vaadin.flow.component.applayout.DrawerToggle;
@@ -69,7 +69,7 @@ public class MainLayout extends AppLayout {
         nav.addItem(new SideNavItem("About", AboutView.class, LineAwesomeIcon.FILE.create()));
         nav.addItem(new SideNavItem("Card List", CardListView.class, LineAwesomeIcon.LIST_SOLID.create()));
         nav.addItem(new SideNavItem("Empty", EmptyView.class, LineAwesomeIcon.FILE.create()));
-        nav.addItem(new SideNavItem("Master-Detail", MasterDetailView.class, LineAwesomeIcon.COLUMNS_SOLID.create()));
+        nav.addItem(new SideNavItem("Master-Detail", PersonMasterDetailView.class, LineAwesomeIcon.COLUMNS_SOLID.create()));
         nav.addItem(new SideNavItem("Collaborative Master-Detail", CollaborativeMasterDetailView.class,
                 LineAwesomeIcon.COLUMNS_SOLID.create()));
         nav.addItem(new SideNavItem("Person Form", PersonFormView.class, LineAwesomeIcon.USER.create()));
