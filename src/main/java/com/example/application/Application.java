@@ -6,6 +6,8 @@ import com.vaadin.flow.component.page.Push;
 import com.vaadin.flow.theme.Theme;
 import com.vaadin.flow.theme.lumo.Lumo;
 
+import lombok.extern.java.Log;
+
 import java.util.Set;
 
 import javax.sql.DataSource;
@@ -28,6 +30,7 @@ import org.springframework.context.annotation.Bean;
 @SpringBootApplication
 @Theme(value = "vaadinstarter", variant = Lumo.DARK)
 @Push
+@Log
 public class Application implements AppShellConfigurator, CommandLineRunner {
 
     public static void main(String[] args) {
@@ -50,10 +53,12 @@ public class Application implements AppShellConfigurator, CommandLineRunner {
     }
 
 	@Override
-	public void run(String... args) throws Exception {
-		Set<Class<?>> findAllClassesUsingClassLoader = AccessingAllClassesInPackage.findAllClassesUsingClassLoader(Application.class.getPackageName());
-		for (Class<?> cls: findAllClassesUsingClassLoader) {
-			System.out.println(cls.getSimpleName() + ": " + cls.descriptorString());
+	public void run(final String... args) throws Exception {
+		final Set<Class<?>> findAllClassesUsingClassLoader = AccessingAllClassesInPackage.findAllClassesUsingClassLoader(Application.class.getPackageName());
+		for (final Class<?> cls: findAllClassesUsingClassLoader) {
+			if ( cls != null) {
+				log.info(() -> cls.getSimpleName() + ": " + cls.descriptorString());
+			}
 		}
 		
 	}
