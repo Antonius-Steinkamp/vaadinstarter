@@ -1,6 +1,6 @@
 package com.example.application.views.gridwithfilters;
 
-import com.example.application.data.entity.SamplePerson;
+import com.example.application.data.entity.Person;
 import com.example.application.data.service.SamplePersonService;
 import com.example.application.views.MainLayout;
 import com.vaadin.flow.component.Component;
@@ -40,7 +40,7 @@ import org.springframework.data.jpa.domain.Specification;
 @Uses(Icon.class)
 public class GridwithFiltersView extends Div {
 
-    private Grid<SamplePerson> grid;
+    private Grid<Person> grid;
 
     private Filters filters;
     private final SamplePersonService samplePersonService;
@@ -82,7 +82,7 @@ public class GridwithFiltersView extends Div {
         return mobileFilters;
     }
 
-    public static class Filters extends Div implements Specification<SamplePerson> {
+    public static class Filters extends Div implements Specification<Person> {
 
         private final TextField name = new TextField("Name");
         private final TextField phone = new TextField("Phone");
@@ -144,7 +144,7 @@ public class GridwithFiltersView extends Div {
         }
 
         @Override
-        public Predicate toPredicate(Root<SamplePerson> root, CriteriaQuery<?> query, CriteriaBuilder criteriaBuilder) {
+        public Predicate toPredicate(Root<Person> root, CriteriaQuery<?> query, CriteriaBuilder criteriaBuilder) {
             List<Predicate> predicates = new ArrayList<>();
 
             if (!name.isEmpty()) {
@@ -217,7 +217,7 @@ public class GridwithFiltersView extends Div {
     }
 
     private Component createGrid() {
-        grid = new Grid<>(SamplePerson.class, false);
+        grid = new Grid<>(Person.class, false);
         grid.addColumn("firstName").setAutoWidth(true);
         grid.addColumn("lastName").setAutoWidth(true);
         grid.addColumn("email").setAutoWidth(true);

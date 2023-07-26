@@ -1,6 +1,6 @@
 package com.example.application.views.collaborativemasterdetail;
 
-import com.example.application.data.entity.SamplePerson;
+import com.example.application.data.entity.Person;
 import com.example.application.data.service.SamplePersonService;
 import com.example.application.views.MainLayout;
 import com.vaadin.collaborationengine.CollaborationAvatarGroup;
@@ -43,7 +43,7 @@ public class CollaborativeMasterDetailView extends Div implements BeforeEnterObs
     private final String SAMPLEPERSON_ID = "samplePersonID";
     private final String SAMPLEPERSON_EDIT_ROUTE_TEMPLATE = "collaborative-master-detail/%s/edit";
 
-    private final Grid<SamplePerson> grid = new Grid<>(SamplePerson.class, false);
+    private final Grid<Person> grid = new Grid<>(Person.class, false);
 
     CollaborationAvatarGroup avatarGroup;
 
@@ -59,9 +59,9 @@ public class CollaborativeMasterDetailView extends Div implements BeforeEnterObs
     private final Button cancel = new Button("Cancel");
     private final Button save = new Button("Save");
 
-    private final CollaborationBinder<SamplePerson> binder;
+    private final CollaborationBinder<Person> binder;
 
-    private SamplePerson samplePerson;
+    private Person samplePerson;
 
     private final SamplePersonService samplePersonService;
 
@@ -96,7 +96,7 @@ public class CollaborativeMasterDetailView extends Div implements BeforeEnterObs
         grid.addColumn("dateOfBirth").setAutoWidth(true);
         grid.addColumn("occupation").setAutoWidth(true);
         grid.addColumn("role").setAutoWidth(true);
-        LitRenderer<SamplePerson> importantRenderer = LitRenderer.<SamplePerson>of(
+        LitRenderer<Person> importantRenderer = LitRenderer.<Person>of(
                 "<vaadin-icon icon='vaadin:${item.icon}' style='width: var(--lumo-icon-size-s); height: var(--lumo-icon-size-s); color: ${item.color};'></vaadin-icon>")
                 .withProperty("icon", important -> important.isImportant() ? "check" : "minus").withProperty("color",
                         important -> important.isImportant()
@@ -121,7 +121,7 @@ public class CollaborativeMasterDetailView extends Div implements BeforeEnterObs
         });
 
         // Configure Form
-        binder = new CollaborationBinder<>(SamplePerson.class, userInfo);
+        binder = new CollaborationBinder<>(Person.class, userInfo);
 
         // Bind fields. This is where you'd define e.g. validation rules
 
@@ -135,7 +135,7 @@ public class CollaborativeMasterDetailView extends Div implements BeforeEnterObs
         save.addClickListener(e -> {
             try {
                 if (this.samplePerson == null) {
-                    this.samplePerson = new SamplePerson();
+                    this.samplePerson = new Person();
                 }
                 binder.writeBean(this.samplePerson);
                 samplePersonService.update(this.samplePerson);
@@ -158,7 +158,7 @@ public class CollaborativeMasterDetailView extends Div implements BeforeEnterObs
     public void beforeEnter(BeforeEnterEvent event) {
         Optional<Long> samplePersonId = event.getRouteParameters().get(SAMPLEPERSON_ID).map(Long::parseLong);
         if (samplePersonId.isPresent()) {
-            Optional<SamplePerson> samplePersonFromBackend = samplePersonService.get(samplePersonId.get());
+            Optional<Person> samplePersonFromBackend = samplePersonService.get(samplePersonId.get());
             if (samplePersonFromBackend.isPresent()) {
                 populateForm(samplePersonFromBackend.get());
             } else {
@@ -223,7 +223,7 @@ public class CollaborativeMasterDetailView extends Div implements BeforeEnterObs
         populateForm(null);
     }
 
-    private void populateForm(SamplePerson value) {
+    private void populateForm(Person value) {
         this.samplePerson = value;
         String topic = null;
         if (this.samplePerson != null && this.samplePerson.getId() != null) {
