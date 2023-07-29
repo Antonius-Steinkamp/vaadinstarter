@@ -7,7 +7,7 @@ public class Translation extends AbstractEntity {
 
     private String key;
     private String locale;
-    private String translation;
+    private String translated;
 
     public String getKey() {
         return key;
@@ -21,11 +21,11 @@ public class Translation extends AbstractEntity {
     public void setLocale(String locale) {
         this.locale = locale;
     }
-    public String getTranslation() {
-        return translation;
+    public String getTranslated() {
+        return translated;
     }
-    public void setTranslation(String translation) {
-        this.translation = translation;
+    public void setTranslated(String translated) {
+        this.translated = translated;
     }
 
 }
