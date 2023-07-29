@@ -18,7 +18,7 @@ import lombok.extern.java.Log;
  * @author Antonius
  *
  */
-@Component
+// @Component
 @Log
 public class ToUppercase18NProvider implements I18NProvider {
 

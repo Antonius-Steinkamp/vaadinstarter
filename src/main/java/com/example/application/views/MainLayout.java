@@ -1,5 +1,17 @@
 package com.example.application.views;
 
+import static java.time.temporal.ChronoField.HOUR_OF_DAY;
+import static java.time.temporal.ChronoField.MINUTE_OF_HOUR;
+import static java.time.temporal.ChronoField.SECOND_OF_MINUTE;
+
+import java.time.LocalDateTime;
+import java.time.chrono.IsoChronology;
+import java.time.format.DateTimeFormatter;
+import java.time.format.DateTimeFormatterBuilder;
+import java.time.format.ResolverStyle;
+
+import org.vaadin.lineawesome.LineAwesomeIcon;
+
 import com.example.application.views.about.AboutView;
 import com.example.application.views.addressform.AddressFormView;
 import com.example.application.views.cardlist.CardListView;
@@ -10,8 +22,8 @@ import com.example.application.views.empty.EmptyView;
 import com.example.application.views.gridwithfilters.GridwithFiltersView;
 import com.example.application.views.helloworld.HelloWorldView;
 import com.example.application.views.imagelist.ImageListView;
-import com.example.application.views.masterdetail.TranslationMasterDetailView;
 import com.example.application.views.masterdetail.PersonMasterDetailView;
+import com.example.application.views.masterdetail.TranslationMasterDetailView;
 import com.example.application.views.personform.PersonFormView;
 import com.vaadin.flow.component.applayout.AppLayout;
 import com.vaadin.flow.component.applayout.DrawerToggle;
@@ -19,23 +31,40 @@ import com.vaadin.flow.component.html.Footer;
 import com.vaadin.flow.component.html.H1;
 import com.vaadin.flow.component.html.H2;
 import com.vaadin.flow.component.html.Header;
+import com.vaadin.flow.component.html.NativeLabel;
 import com.vaadin.flow.component.orderedlayout.Scroller;
 import com.vaadin.flow.component.sidenav.SideNav;
 import com.vaadin.flow.component.sidenav.SideNavItem;
 import com.vaadin.flow.router.PageTitle;
 import com.vaadin.flow.theme.lumo.LumoUtility;
-import org.vaadin.lineawesome.LineAwesomeIcon;
 
 /**
  * The main view is a top-level placeholder for other views.
  */
 public class MainLayout extends AppLayout {
 
+	NativeLabel dateLabel = new NativeLabel();
+
     /**
 	 * 
 	 */
 	private static final long serialVersionUID = -4533394623204260469L;
 	private H2 viewTitle;
+
+    public static final DateTimeFormatter LOCAL_DATE_TIME;
+    static {
+        LOCAL_DATE_TIME = new DateTimeFormatterBuilder()
+                .parseCaseInsensitive()
+                .append(DateTimeFormatter.ISO_LOCAL_DATE)
+                .appendLiteral(' ')
+                .appendValue(HOUR_OF_DAY, 2)
+                .appendLiteral(':')
+                .appendValue(MINUTE_OF_HOUR, 2)
+                .optionalStart()
+                .appendLiteral(':')
+                .appendValue(SECOND_OF_MINUTE, 2)
+                .toFormatter();
+    }
 
     public MainLayout() {
         setPrimarySection(Section.DRAWER);
@@ -88,14 +117,22 @@ public class MainLayout extends AppLayout {
 
     private Footer createFooter() {
         Footer layout = new Footer();
+        
+        dateLabel.setText(currentTime());
+        layout.add(dateLabel);
 
         return layout;
     }
 
+    private String currentTime() {
+    	return LocalDateTime.now().format(LOCAL_DATE_TIME);
+    }
+    
     @Override
     protected void afterNavigation() {
         super.afterNavigation();
         viewTitle.setText(getCurrentPageTitle());
+        dateLabel.setText(currentTime());
     }
 
     private String getCurrentPageTitle() {

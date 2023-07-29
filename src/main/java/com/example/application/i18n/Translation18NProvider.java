@@ -6,8 +6,13 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Locale;
 
+import org.springframework.dao.EmptyResultDataAccessException;
+import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Component;
 
+import com.example.application.Utils;
+import com.example.application.data.entity.Translation;
+import com.example.application.data.service.TranslationService;
 import com.vaadin.flow.i18n.I18NProvider;
 
 import lombok.extern.java.Log;
@@ -18,7 +23,7 @@ import lombok.extern.java.Log;
  * @author Antonius
  *
  */
-// @Component
+@Component
 @Log
 public class Translation18NProvider implements I18NProvider {
 
@@ -31,6 +36,14 @@ public class Translation18NProvider implements I18NProvider {
 	 */
 	public static final java.util.Locale FINNISH = new Locale("fi");
 
+	private final JdbcTemplate jdbcTemplate;
+	private final TranslationService translationService;
+
+	public Translation18NProvider(JdbcTemplate jdbcTemplate, TranslationService translationService) {
+		this.jdbcTemplate = jdbcTemplate;
+		this.translationService = translationService;
+	}
+
 	@Override
 	public List<Locale> getProvidedLocales() {
 		final List<Locale> result = Collections.unmodifiableList(Arrays.asList(Locale.ENGLISH, Locale.FRENCH, FINNISH));
@@ -40,8 +53,30 @@ public class Translation18NProvider implements I18NProvider {
 
 	@Override
 	public String getTranslation(String key, Locale locale, Object... params) {
-		final String result = MessageFormat.format(key, params).toUpperCase();
-		log.info("Translate '" + key + "/" + locale + "/" + " parms to '" + result + "'");
-		return result;
+		String sql = "SELECT TRANSLATED from TRANSLATION WHERE KEY = '" + key + "' AND LOCALE = '" + locale.getLanguage() 
+				+ "'";
+		String translated = null;
+		try {
+			translated = jdbcTemplate.queryForObject(sql, String.class);
+		} catch (EmptyResultDataAccessException ex) {
+			// ignore
+		}
+		if (Utils.hasValue(translated)) {
+			final String result = MessageFormat.format(translated, params);
+			log.info("Translate '" + key + "/" + locale + "/" + " parms to '" + result + "'");
+			return result;
+		} else {
+			Translation translation = new Translation();
+			translation.setKey(key);
+			translation.setLocale(locale.getLanguage());
+			translation.setTranslated(untranslated(key));
+			translationService.update(translation);
+			final String result = MessageFormat.format(untranslated(key), params).toUpperCase();
+			log.info("Translate '" + key + "/" + locale + "/" + " parms to '" + result + "'");
+			return result;
+		}
+	}
+	private String untranslated(String untranslated) {
+		return "_" + untranslated;
 	}
 }
