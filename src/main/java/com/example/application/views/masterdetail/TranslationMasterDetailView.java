@@ -7,6 +7,7 @@ import com.vaadin.flow.component.UI;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.button.ButtonVariant;
 import com.vaadin.flow.component.combobox.ComboBox;
+import com.vaadin.flow.component.datetimepicker.DateTimePicker;
 import com.vaadin.flow.component.formlayout.FormLayout;
 import com.vaadin.flow.component.grid.Grid;
 import com.vaadin.flow.component.grid.GridVariant;
@@ -19,6 +20,7 @@ import com.vaadin.flow.component.splitlayout.SplitLayout;
 import com.vaadin.flow.component.textfield.TextField;
 import com.vaadin.flow.data.binder.BeanValidationBinder;
 import com.vaadin.flow.data.binder.ValidationException;
+import com.vaadin.flow.data.renderer.LocalDateTimeRenderer;
 import com.vaadin.flow.internal.LocaleUtil;
 import com.vaadin.flow.router.BeforeEnterEvent;
 import com.vaadin.flow.router.BeforeEnterObserver;
@@ -26,6 +28,8 @@ import com.vaadin.flow.router.PageTitle;
 import com.vaadin.flow.router.Route;
 import com.vaadin.flow.spring.data.VaadinSpringDataHelpers;
 
+import java.time.format.DateTimeFormatter;
+import java.time.format.FormatStyle;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
@@ -49,10 +53,13 @@ public class TranslationMasterDetailView extends Div implements BeforeEnterObser
     private TextField key;
     private ComboBox<String> locale;
     private TextField translated;
+    private DateTimePicker cdate;
+    private DateTimePicker udate;
 
     private final Button cancel = new Button("Cancel");
     private final Button save = new Button("Save");
     private final Button insert = new Button("Insert");
+    private final Button delete = new Button("Delete");
 
     private final BeanValidationBinder<Translation> binder;
 
@@ -72,10 +79,17 @@ public class TranslationMasterDetailView extends Div implements BeforeEnterObser
 
         add(splitLayout);
 
+        final String DATE_FORMATTER= "yyyy-MM-dd HH:mm:ss";
+        LocalDateTimeRenderer<Translation> cdateRenderer = new LocalDateTimeRenderer<>(Translation::getCdate, () -> DateTimeFormatter.ofPattern(DATE_FORMATTER));
+        LocalDateTimeRenderer<Translation> udateRenderer = new LocalDateTimeRenderer<>(Translation::getUdate, () -> DateTimeFormatter.ofPattern(DATE_FORMATTER));
+
         // Configure Grid
         grid.addColumn("key").setAutoWidth(true);
         grid.addColumn("locale").setAutoWidth(true);
         grid.addColumn("translated").setAutoWidth(true);
+        grid.addColumn("cdate").setRenderer(cdateRenderer).setAutoWidth(true);
+        grid.addColumn("udate").setRenderer(udateRenderer).setAutoWidth(true);
+        
         grid.setItems(query -> translationService.list(
                 PageRequest.of(query.getPage(), query.getPageSize(), VaadinSpringDataHelpers.toSpringDataSort(query)))
                 .stream());
@@ -110,7 +124,7 @@ public class TranslationMasterDetailView extends Div implements BeforeEnterObser
                 translationService.update(this.translation);
                 clearForm();
                 refreshGrid();
-                Notification.show("Data updated");
+                Notification.show("Data inserted");
                 UI.getCurrent().navigate(TranslationMasterDetailView.class);
             } catch (ObjectOptimisticLockingFailureException exception) {
                 Notification n = Notification.show(
@@ -132,6 +146,26 @@ public class TranslationMasterDetailView extends Div implements BeforeEnterObser
                 clearForm();
                 refreshGrid();
                 Notification.show("Data updated");
+                UI.getCurrent().navigate(TranslationMasterDetailView.class);
+            } catch (ObjectOptimisticLockingFailureException exception) {
+                Notification n = Notification.show(
+                        "Error updating the data. Somebody else has updated the record while you were making changes.");
+                n.setPosition(Position.MIDDLE);
+                n.addThemeVariants(NotificationVariant.LUMO_ERROR);
+            } catch (ValidationException validationException) {
+                Notification.show("Failed to update the data. Check again that all values are valid");
+            }
+        });
+
+        delete.addClickListener(e -> {
+            try {
+                if (this.translation != null) {
+	                binder.writeBean(this.translation);
+	                translationService.delete(this.translation.getId());
+	                clearForm();
+	                refreshGrid();
+	                Notification.show("Data deleted");
+                }
                 UI.getCurrent().navigate(TranslationMasterDetailView.class);
             } catch (ObjectOptimisticLockingFailureException exception) {
                 Notification n = Notification.show(
@@ -193,7 +227,12 @@ public class TranslationMasterDetailView extends Div implements BeforeEnterObser
         locale.setItems( getLocalesAsStrings());
         
         translated = new TextField("Translated");
-        formLayout.add(key, locale, translated);
+        
+        cdate = new DateTimePicker("Creation Date");
+        udate = new DateTimePicker("Update Date");
+        
+        
+        formLayout.add(key, locale, translated, cdate, udate);
 
         editorDiv.add(formLayout);
         createButtonLayout(editorLayoutDiv);
@@ -207,7 +246,8 @@ public class TranslationMasterDetailView extends Div implements BeforeEnterObser
         save.addThemeVariants(ButtonVariant.LUMO_PRIMARY);
         cancel.addThemeVariants(ButtonVariant.LUMO_TERTIARY);
         insert.addThemeVariants(ButtonVariant.LUMO_TERTIARY);
-        buttonLayout.add(save, cancel, insert);
+        delete.addThemeVariants(ButtonVariant.LUMO_TERTIARY);
+        buttonLayout.add(insert, save, delete, cancel);
         editorLayoutDiv.add(buttonLayout);
     }
 

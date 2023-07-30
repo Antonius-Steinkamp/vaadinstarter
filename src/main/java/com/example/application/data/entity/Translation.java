@@ -1,6 +1,9 @@
 package com.example.application.data.entity;
 
+import java.time.LocalDateTime;
+
 import jakarta.persistence.Entity;
+import jakarta.persistence.PreUpdate;
 
 @Entity
 public class Translation extends AbstractEntity {
@@ -8,11 +11,29 @@ public class Translation extends AbstractEntity {
     private String key;
     private String locale;
     private String translated;
+    private LocalDateTime udate; // update Date
+    private LocalDateTime cdate; // creation Date
 
+    public Translation() {
+    	cdate = LocalDateTime.now();
+    	udate = cdate;
+    }
+    
+    @PreUpdate
+    public void preUpdateFunction(){
+        udate = LocalDateTime.now();
+    }
+    
     public String getKey() {
         return key;
     }
-    public void setKey(String key) {
+    public LocalDateTime getUdate() {
+		return udate;
+	}
+	public LocalDateTime getCdate() {
+		return cdate;
+	}
+	public void setKey(String key) {
         this.key = key;
     }
     public String getLocale() {
