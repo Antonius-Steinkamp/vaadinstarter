@@ -11,8 +11,9 @@ public class Translation extends AbstractEntity {
     private String key;
     private String locale;
     private String translated;
-    private LocalDateTime udate; // update Date
+    private LocalDateTime udate; // last update Date
     private LocalDateTime cdate; // creation Date
+    private LocalDateTime rdate; // last read Date
 
     public Translation() {
     	cdate = LocalDateTime.now();
@@ -24,7 +25,15 @@ public class Translation extends AbstractEntity {
         udate = LocalDateTime.now();
     }
     
-    public String getKey() {
+    public LocalDateTime getRdate() {
+		return rdate;
+	}
+
+    public void updateRdate() {
+		rdate = LocalDateTime.now();
+	}
+
+	public String getKey() {
         return key;
     }
     public LocalDateTime getUdate() {

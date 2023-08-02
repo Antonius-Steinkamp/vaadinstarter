@@ -1,5 +1,14 @@
 package com.example.application.views.masterdetail;
 
+import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Locale;
+import java.util.Optional;
+
+import org.springframework.data.domain.PageRequest;
+import org.springframework.orm.ObjectOptimisticLockingFailureException;
+
 import com.example.application.data.entity.Translation;
 import com.example.application.data.service.TranslationService;
 import com.example.application.views.MainLayout;
@@ -28,15 +37,6 @@ import com.vaadin.flow.router.PageTitle;
 import com.vaadin.flow.router.Route;
 import com.vaadin.flow.spring.data.VaadinSpringDataHelpers;
 
-import java.time.format.DateTimeFormatter;
-import java.time.format.FormatStyle;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Locale;
-import java.util.Optional;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.orm.ObjectOptimisticLockingFailureException;
-
 @PageTitle("Translation-Master-Detail")
 @Route(value = "translation-master-detail/:translationID?/:action?(edit)", layout = MainLayout.class)
 public class TranslationMasterDetailView extends Div implements BeforeEnterObserver {
@@ -55,6 +55,7 @@ public class TranslationMasterDetailView extends Div implements BeforeEnterObser
     private TextField translated;
     private DateTimePicker cdate;
     private DateTimePicker udate;
+    private DateTimePicker rdate;
 
     private final Button cancel = new Button("Cancel");
     private final Button save = new Button("Save");
@@ -79,9 +80,10 @@ public class TranslationMasterDetailView extends Div implements BeforeEnterObser
 
         add(splitLayout);
 
-        final String DATE_FORMATTER= "yyyy-MM-dd HH:mm:ss";
+        final String DATE_FORMATTER= "HH:mm:ss dd.MM.yyyy";
         LocalDateTimeRenderer<Translation> cdateRenderer = new LocalDateTimeRenderer<>(Translation::getCdate, () -> DateTimeFormatter.ofPattern(DATE_FORMATTER));
         LocalDateTimeRenderer<Translation> udateRenderer = new LocalDateTimeRenderer<>(Translation::getUdate, () -> DateTimeFormatter.ofPattern(DATE_FORMATTER));
+        LocalDateTimeRenderer<Translation> rdateRenderer = new LocalDateTimeRenderer<>(Translation::getRdate, () -> DateTimeFormatter.ofPattern(DATE_FORMATTER));
 
         // Configure Grid
         grid.addColumn("key").setAutoWidth(true);
@@ -89,6 +91,7 @@ public class TranslationMasterDetailView extends Div implements BeforeEnterObser
         grid.addColumn("translated").setAutoWidth(true);
         grid.addColumn("cdate").setRenderer(cdateRenderer).setAutoWidth(true);
         grid.addColumn("udate").setRenderer(udateRenderer).setAutoWidth(true);
+        grid.addColumn("rdate").setRenderer(rdateRenderer).setAutoWidth(true);
         
         grid.setItems(query -> translationService.list(
                 PageRequest.of(query.getPage(), query.getPageSize(), VaadinSpringDataHelpers.toSpringDataSort(query)))
@@ -156,6 +159,8 @@ public class TranslationMasterDetailView extends Div implements BeforeEnterObser
                 Notification.show("Failed to update the data. Check again that all values are valid");
             }
         });
+        save.addThemeVariants(ButtonVariant.LUMO_PRIMARY);
+
 
         delete.addClickListener(e -> {
             try {
@@ -229,10 +234,11 @@ public class TranslationMasterDetailView extends Div implements BeforeEnterObser
         translated = new TextField("Translated");
         
         cdate = new DateTimePicker("Creation Date");
-        udate = new DateTimePicker("Update Date");
+        udate = new DateTimePicker("Last Update");
+        rdate = new DateTimePicker("Last Read");
         
         
-        formLayout.add(key, locale, translated, cdate, udate);
+        formLayout.add(key, locale, translated, cdate, udate, rdate);
 
         editorDiv.add(formLayout);
         createButtonLayout(editorLayoutDiv);
@@ -243,7 +249,6 @@ public class TranslationMasterDetailView extends Div implements BeforeEnterObser
     private void createButtonLayout(Div editorLayoutDiv) {
         HorizontalLayout buttonLayout = new HorizontalLayout();
         buttonLayout.setClassName("button-layout");
-        save.addThemeVariants(ButtonVariant.LUMO_PRIMARY);
         cancel.addThemeVariants(ButtonVariant.LUMO_TERTIARY);
         insert.addThemeVariants(ButtonVariant.LUMO_TERTIARY);
         delete.addThemeVariants(ButtonVariant.LUMO_TERTIARY);

@@ -1,6 +1,9 @@
 package com.example.application.i18n;
 
+import java.sql.Timestamp;
 import java.text.MessageFormat;
+import java.time.Instant;
+import java.time.LocalDateTime;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
@@ -53,30 +56,33 @@ public class Translation18NProvider implements I18NProvider {
 
 	@Override
 	public String getTranslation(String key, Locale locale, Object... params) {
-		String sql = "SELECT TRANSLATED from TRANSLATION WHERE KEY = '" + key + "' AND LOCALE = '" + locale.getLanguage() 
-				+ "'";
-		String translated = null;
+		String sql = "SELECT id from TRANSLATION WHERE KEY = '" + key + "' AND LOCALE = '" + locale.getLanguage() + "'";
+		Long id;
+		Translation translation = null;
 		try {
-			translated = jdbcTemplate.queryForObject(sql, String.class);
+			id = jdbcTemplate.queryForObject(sql, Long.class);
+			translation = translationService.get(id).get();
 		} catch (EmptyResultDataAccessException ex) {
-			// ignore
+			// No such Row
 		}
-		if (Utils.hasValue(translated)) {
-			final String result = MessageFormat.format(translated, params);
-			log.info("Translate '" + key + "/" + locale + "/" + " parms to '" + result + "'");
+		if (translation != null) {
+			final String result = MessageFormat.format(translation.getTranslated(), params);
+			log.info("Translate '" + key + "/" + locale + "/" + " to '" + result + "'");
+			translation.updateRdate();
+			translationService.update(translation);
 			return result;
 		} else {
-			Translation translation = new Translation();
+			translation = new Translation();
 			translation.setKey(key);
 			translation.setLocale(locale.getLanguage());
 			translation.setTranslated(untranslated(key));
 			translationService.update(translation);
-			final String result = MessageFormat.format(untranslated(key), params).toUpperCase();
-			log.info("Translate '" + key + "/" + locale + "/" + " parms to '" + result + "'");
+			final String result = MessageFormat.format(untranslated(key), params);
+			log.info("Translate '" + key + "/" + locale + "/" + " to '" + result + "'");
 			return result;
 		}
 	}
-	private String untranslated(String untranslated) {
-		return "_" + untranslated;
+	private String untranslated(String key) {
+		return "<" + key + ">";
 	}
 }

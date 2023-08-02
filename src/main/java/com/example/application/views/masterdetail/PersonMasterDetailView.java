@@ -22,6 +22,7 @@ import com.vaadin.flow.component.splitlayout.SplitLayout;
 import com.vaadin.flow.component.textfield.TextField;
 import com.vaadin.flow.data.binder.BeanValidationBinder;
 import com.vaadin.flow.data.binder.ValidationException;
+import com.vaadin.flow.data.renderer.ComponentRenderer;
 import com.vaadin.flow.data.renderer.LitRenderer;
 import com.vaadin.flow.router.BeforeEnterEvent;
 import com.vaadin.flow.router.BeforeEnterObserver;
@@ -84,6 +85,7 @@ public class PersonMasterDetailView extends Div implements BeforeEnterObserver {
         grid.addColumn("dateOfBirth").setAutoWidth(true);
         grid.addColumn("occupation").setAutoWidth(true);
         grid.addColumn("role").setAutoWidth(true);
+        /* Tuts nich in Docker
         LitRenderer<Person> importantRenderer = LitRenderer.<Person>of(
                 "<vaadin-icon icon='vaadin:${item.icon}' style='width: var(--lumo-icon-size-s); height: var(--lumo-icon-size-s); color: ${item.color};'></vaadin-icon>")
                 .withProperty("icon", important -> important.isImportant() ? "check" : "minus").withProperty("color",
@@ -92,6 +94,18 @@ public class PersonMasterDetailView extends Div implements BeforeEnterObserver {
                                 : "var(--lumo-disabled-text-color)");
 
         grid.addColumn(importantRenderer).setHeader("Important").setAutoWidth(true);
+        */
+        
+        grid.addColumn(
+                new ComponentRenderer<>(
+                        person -> {
+                            Checkbox checkbox = new Checkbox();
+                            checkbox.setEnabled(false);
+                            checkbox.setValue( person.isImportant() );                            
+                            return checkbox;
+                        }
+                )
+        ).setHeader("Has Files").setKey("hasFiles");
 
         grid.setItems(query -> samplePersonService.list(
                 PageRequest.of(query.getPage(), query.getPageSize(), VaadinSpringDataHelpers.toSpringDataSort(query)))
